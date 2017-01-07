@@ -72,6 +72,10 @@ class ParserTestCase(unittest.TestCase):
         self.assertParsesFirstStatement('f(a)(b)(c)',
                           [FunctionCall(FunctionCall(FunctionCall(Var('f'), [Var('a')]), [Var('b')]), [Var('c')])])
 
+    def test_function_call_chain_with_strings_arguments(self):
+        self.assertParsesFirstStatement('f "a" "b" "c"',
+                          [FunctionCall(FunctionCall(FunctionCall(Var('f'), [LiteralString('a')]), [LiteralString('b')]), [LiteralString('c')])])
+
     def assertPrints(self, node, expected):
         self.assertEqual(printer.ast_to_string(node), expected)
 
