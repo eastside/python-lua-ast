@@ -8,11 +8,11 @@ Current version of parser is based on this BNF specification: https://www.lua.or
 
 If you want to parse something more with this library, please provide pull request with:
 
-    * parser implementation
+  * parser implementation
 
-    * printer implementation
+  * printer implementation
 
-    * appropriate tests cases
+  * appropriate tests cases
 
 
 ## Bugs
