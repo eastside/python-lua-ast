@@ -1,7 +1,7 @@
 #-*- coding: utf-8 -*-
 from __future__ import absolute_import
 from pyparsing import (alphanums, alphas, Forward, Group, Keyword, Literal,
-                       OneOrMore, Optional, QuotedString, Suppress, Word,
+                       OneOrMore, Optional, QuotedString, restOfLine, Suppress, Word,
                        ZeroOrMore)
 
 from . import ast
@@ -9,6 +9,8 @@ from . import ast
 # "Names (also called identifiers) in Lua can be any string of letters,
 #  digits, and underscores, not beginning with a digit."
 name = Word( alphas + "_", alphanums + "_" )
+
+comment = Suppress(Literal('--') + restOfLine)
 
 # XXX: we are cheating a lot here as there is also long bracket form...
 literal_string = (QuotedString("'", "\\") | QuotedString('"', "\\")).setParseAction(ast.LiteralString.from_parse_result)
@@ -55,7 +57,7 @@ stat = (varlist + Suppress("=") + explist).setParseAction(ast.Assignment.from_pa
 retstat = (Keyword("return") + Optional(explist) + semicolon)
 
 # block ::= {stat} [retstat]
-block = (Optional(ZeroOrMore(stat | retstat), default=[])).setParseAction(ast.Block.from_parse_result)
+block = (Optional(ZeroOrMore(stat | retstat | comment), default=[])).setParseAction(ast.Block.from_parse_result)
 
 #field ::= `[´ exp `]´ `=´ exp | Name `=´ exp | exp
 #field = Group("[" + exp + "]" + Literal("=") + exp) ...

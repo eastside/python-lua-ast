@@ -15,6 +15,10 @@ class ParserTestCase(unittest.TestCase):
     def test_string(self):
         self.assertParsesFirstStatement('x = "lorem ipsum"', [Assignment([Var('x')], [LiteralString("lorem ipsum")])])
 
+    def test_comments_are_ignored_at_the_end_of_line(self):
+        self.assertParsesFirstStatement('x = "lorem ipsum" -- comment',
+                                        [Assignment([Var('x')], [LiteralString("lorem ipsum")])])
+
     def test_mutilple_string_assignments(self):
         self.assertParsesBlock('x = "lorem ipsum"; y = "lipsum"',
                                Block(Assignment([Var('x')],
@@ -22,6 +26,18 @@ class ParserTestCase(unittest.TestCase):
                                      semicolon,
                                      Assignment([Var('y')],
                                                 [LiteralString('lipsum')])))
+
+    def test_comments_lines_are_ignored(self):
+        self.assertParsesBlock('x = "lorem ipsum"\n'
+                               '-- comment\n'
+                               '-- \n'
+                               '-- another comment\n'
+                               'y = "lipsum"',
+                               Block(Assignment([Var('x')],
+                                                  [LiteralString('lorem ipsum')]),
+                                     Assignment([Var('y')],
+                                                [LiteralString('lipsum')])))
+
     def test_nil(self):
         self.assertParsesFirstStatement('x = nil', [Assignment([Var('x')], [nil])])
 

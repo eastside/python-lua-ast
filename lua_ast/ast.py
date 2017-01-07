@@ -3,9 +3,6 @@ from collections import namedtuple
 
 class Node(object):
 
-    def __new__(cls, *children):
-        raise NotImplementedError('You have to implement constructor (__new__ method of "%s") in all Node subclasses.' % cls.__name__)
-
     @classmethod
     def from_parse_result(cls, tok, pos, children):
         return cls(*children)
@@ -65,25 +62,25 @@ class Boolean(namedtuple('Boolean', ['value']), Node):
 
 class Nil(namedtuple('Nil', []), Node):
 
-    _value = None
+    _instance = None
 
     def __new__(cls, value):
         assert value is 'nil'
-        if cls._value is None:
-            cls._value = super(Nil, cls).__new__(cls)
-        return cls._value
+        if cls._instance is None:
+            cls._instance = super(Nil, cls).__new__(cls)
+        return cls._instance
 
 nil = Nil('nil')
 
 class Semicolon(namedtuple('Semicolon', []), Node):
 
-    _value = None
+    _instance = None
 
     def __new__(cls, value):
         assert value is ';'
-        if cls._value is None:
-            cls._value = super(Semicolon, cls).__new__(cls)
-        return cls._value
+        if cls._instance is None:
+            cls._instance = super(Semicolon, cls).__new__(cls)
+        return cls._instance
 
 semicolon = Semicolon(';')
 
