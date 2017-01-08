@@ -7,7 +7,7 @@ REQUIREMENTS = [
 
 setup(
     name = "python-lua-ast",
-    version = "0.0.1",
+    version = "0.0.2",
     author = "Tomasz Rybarczyk",
     author_email = "paluho@gmail.com",
     description = ("A Lua parser/printer"),
