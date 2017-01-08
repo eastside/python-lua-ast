@@ -7,9 +7,9 @@ class Node(object):
     def from_parse_result(cls, tok, pos, children):
         return cls(*children)
 
-    def accept(self, visitor):
+    def accept(self, visitor, **kwargs):
         visit_method = getattr(visitor, 'visit_' + type(self).__name__.lower(), visitor.generic_visit)
-        return visit_method(self)
+        return visit_method(self, **kwargs)
 
 
 class Block(namedtuple('Block', ['statements']), Node):
