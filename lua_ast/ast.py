@@ -52,8 +52,10 @@ class NamedField(namedtuple('NamedField', ['key', 'value']), Node):
 class Boolean(namedtuple('Boolean', ['value']), Node):
 
     def __new__(cls, value):
-        assert (value in ['true', 'false'])
-        return super(Boolean, cls).__new__(cls, value == 'true')
+        assert (value in ['true', 'false'] or isinstance(value, bool))
+        if value in ['true', 'false']:
+            value = value == 'true'
+        return super(Boolean, cls).__new__(cls, value)
 
 
 class Nil(namedtuple('Nil', []), Node):

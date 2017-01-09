@@ -119,7 +119,7 @@ class ParserTestCase(unittest.TestCase):
         self.assertPrints(parse("x = 'first'; y = 'second'"), "x = 'first'\ny = 'second'")
 
     def test_print_functioncall_without_args(self):
-        self.assertPrints(parse("f()"), "f()")
+        self.assertPrints(parse("f(   )"), "f()")
 
     def test_print_functioncall_with_single_arg(self):
         self.assertPrints(parse("f 'argument'"), "f('argument')")
@@ -128,7 +128,7 @@ class ParserTestCase(unittest.TestCase):
         self.assertPrints(parse("f('argument',true,false)"), "f('argument', true, false)")
 
     def test_print_functioncall_chain(self):
-        self.assertPrints(parse("f(a)(b, c, d)(e)"), "f(a)(b, c, d)(e)")
+        self.assertPrints(parse("f( a )(b, c, d)(e)"), "f(a)(b, c, d)(e)")
 
     def test_print_method(self):
         self.assertPrints(parse("o:m()"), "o:m()")
