@@ -1,6 +1,8 @@
 import unittest
 
-from lua_ast.ast import Assignment, Boolean, Block, FunctionCall, LiteralString, NamedField, nil, semicolon, Table, UnnamedField, Var
+from lua_ast.ast import (Assignment, Block, Boolean, FunctionCall,
+                         LiteralString, MethodCall, NamedField, nil, semicolon,
+                         Table, UnnamedField, Var)
 from lua_ast import parse
 from lua_ast import printer
 
@@ -60,17 +62,48 @@ class ParserTestCase(unittest.TestCase):
         self.assertParsesFirstStatement('f()',
                           [FunctionCall(Var('f'), [])])
 
+    def test_method_call_without_args(self):
+        self.assertParsesFirstStatement('o:f()',
+                          [MethodCall(Var('o'), Var('f'), [])])
+
     def test_function_call_with_args_list(self):
         self.assertParsesFirstStatement('f(a)',
-                          [FunctionCall(Var('f'), [Var('a')])])
+                                        [FunctionCall(Var('f'), [Var('a')])])
+
+    def test_method_call_with_args_list(self):
+        self.assertParsesFirstStatement('o:f(a)',
+                                        [MethodCall(Var('o'), Var('f'), [Var('a')])])
 
     def test_function_call_with_arg_string(self):
         self.assertParsesFirstStatement('f "string"',
                           [FunctionCall(Var('f'), [LiteralString('string')])])
 
+    def test_method_call_with_arg_string(self):
+        self.assertParsesFirstStatement('o:f "string"',
+                                        [MethodCall(Var('o'), Var('f'), [LiteralString('string')])])
+
+    def test_function_chain_of_two_calls(self):
+        self.assertParsesFirstStatement('f(a)(b)',
+                          [FunctionCall(FunctionCall(Var('f'), [Var('a')]), [Var('b')])])
+
+    def test_method_chain_of_two_calls(self):
+        self.assertParsesFirstStatement('o:m1(a):m2(b)',
+                          [MethodCall(MethodCall(Var('o'), Var('m1'), [Var('a')]), Var('m2'), [Var('b')])])
+
+    def test_mixed_chain_of_two_calls(self):
+        self.assertParsesFirstStatement('o:m1(a)(b)',
+                          [FunctionCall(MethodCall(Var('o'), Var('m1'), [Var('a')]), [Var('b')])])
+
     def test_function_call_chain(self):
         self.assertParsesFirstStatement('f(a)(b)(c)',
                           [FunctionCall(FunctionCall(FunctionCall(Var('f'), [Var('a')]), [Var('b')]), [Var('c')])])
+
+    def test_method_call_chain(self):
+        self.assertParsesFirstStatement('o:m1(a):m2(b, c):m3(d, e, f)',
+                                        [MethodCall(MethodCall(MethodCall(Var('o'), Var('m1'),
+                                                                          [Var('a')]),
+                                                               Var('m2'), [Var('b'), Var('c')]),
+                                                    Var('m3'), [Var('d'), Var('e'), Var('f')])])
 
     def test_function_call_chain_with_strings_arguments(self):
         self.assertParsesFirstStatement('f "a" "b" "c"',
@@ -93,6 +126,15 @@ class ParserTestCase(unittest.TestCase):
 
     def test_print_functioncall_with_multiple_args(self):
         self.assertPrints(parse("f('argument',true,false)"), "f('argument', true, false)")
+
+    def test_print_functioncall_chain(self):
+        self.assertPrints(parse("f(a)(b, c, d)(e)"), "f(a)(b, c, d)(e)")
+
+    def test_print_method(self):
+        self.assertPrints(parse("o:m()"), "o:m()")
+
+    def test_print_methodcall_chain(self):
+        self.assertPrints(parse("o:m1(a):m2(b, c, d):m3(e)"), "o:m1(a):m2(b, c, d):m3(e)")
 
     def test_print_empty_table(self):
         self.assertPrints(Table(), "{}")

@@ -37,6 +37,13 @@ class Printer(object):
         return '%s(%s)' % (function, arguments)
 
     @classmethod
+    def visit_methodcall(cls, node):
+        function = node.obj.accept(cls)
+        method = node.method.name
+        arguments = cls._comma_separated_list(node.args)
+        return '%s:%s(%s)' % (function, method, arguments)
+
+    @classmethod
     def visit_boolean(cls, node):
         if node.value:
             return 'true'

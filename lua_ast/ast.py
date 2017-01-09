@@ -3,10 +3,6 @@ from collections import namedtuple
 
 class Node(object):
 
-    @classmethod
-    def from_parse_result(cls, tok, pos, children):
-        return cls(*children)
-
     def accept(self, visitor, **kwargs):
         visit_method = getattr(visitor, 'visit_' + type(self).__name__.lower(), visitor.generic_visit)
         return visit_method(self, **kwargs)
@@ -20,7 +16,7 @@ class Block(namedtuple('Block', ['statements']), Node):
 class Assignment(namedtuple('Assignment', ['variables', 'expressions']), Node):
 
     def __new__(cls, variables, expressions):
-        return super(Assignment, cls).__new__(cls, list(variables), list(expressions))
+        return super(Assignment, cls).__new__(cls, variables, expressions)
 
 
 class LiteralString(namedtuple('LiteralString', ['value']), Node):
@@ -87,4 +83,12 @@ semicolon = Semicolon(';')
 class FunctionCall(namedtuple('FunctionCall', ['function', 'args']), Node):
 
     def __new__(cls, fun, args):
-        return super(FunctionCall, cls).__new__(cls, fun, list(args))
+        return super(FunctionCall, cls).__new__(cls, fun, args)
+
+
+class MethodCall(namedtuple('MethodCall', ['obj', 'method', 'args']), Node):
+
+    def __new__(cls, obj, method, args):
+        return super(MethodCall, cls).__new__(cls, obj, method, args)
+
+
